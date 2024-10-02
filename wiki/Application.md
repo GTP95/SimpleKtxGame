@@ -1,0 +1,268 @@
+Setup is done? Initial LibGDX game window is starting up? Great job! :)
+
+Now let's focus on the fun part. First we will look into the [app](https://github.com/libktx/ktx/blob/master/app/README.md) extension from LibKTX.
+
+The starting point of the tutorial will be the [00-plain-kotlin branch](https://github.com/Quillraven/SimpleKtxGame/tree/00-plain-kotlin) that is simply containing the [Kotlin code](https://gist.github.com/dksmiffs/d921cc20ca6d96284266d13077929705) for the [LibGDX Extending the Simple Game](https://github.com/libgdx/libgdx/wiki/Extending-the-simple-game) tutorial.
+
+In this part we will improve the **Game** and **Screen** classes by using the **KTX** counterparts. In addition we will improve the code a little bit with some general coding and Kotlin best practices.
+
+***
+
+To use the [KTX app](https://github.com/libktx/ktx/blob/master/app/README.md) extension we first need to update our project's **build.gradle** file by adding a **ktxVersion** variable and a new dependency to our **core** project.
+
+**Please note that the gdxVersion and ktxVersion should match. When I wrote this tutorial I used libGDX 1.9.9 and libKTX 1.9.9-b1. As of today (2020-12-02) I recommend to use libGDX 1.9.12 and libKTX 1.9.12-b1. Refer to [KTX version](https://github.com/libktx/ktx/releases) and [LibGDX version](https://github.com/libgdx/libgdx/releases) to see the latest stable releases that you can use.**
+
+```Diff
+allprojects {
+    apply plugin: "idea"
+
+    version = '1.0'
+    ext {
+        appName = "A simple libktx game"
+        gdxVersion = '1.9.9'
+        roboVMVersion = '2.3.6'
+        box2DLightsVersion = '1.4'
+        ashleyVersion = '1.7.3'
+        aiVersion = '1.8.1'
++        ktxVersion = '1.9.9-b1'
+    }
+
+    repositories {
+        //...
+    }
+}
+// ...
+project(":core") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
++        api "io.github.libktx:ktx-app:$ktxVersion"
+    }
+}
+```
+Re-sync your gradle project to be able to use the new **KTX app** extensions.
+
+***
+
+As mentioned in the [LibGDX Extending the Simple Game](https://github.com/libgdx/libgdx/wiki/Extending-the-simple-game) wikipedia page it is a good practice to use the **Game** and **Screen** class.
+I think everyone who used these classes before knows that you will need to write your own _ScreenCache_ or something similar to avoid creating new screens all the time and to remember the old status of your screen when switching between them. <br>
+The second thing is that you always had to manually take care of **disposing** screens and usually you anyway want to do that when your game's `dispose()` method is called.
+
+What a coincidence but LibKTX will take care of that for us with its [KtxGame](https://github.com/libktx/ktx/blob/master/app/src/main/kotlin/ktx/app/game.kt) implementation! It will have an internal _ScreenCache_ and it will automatically dispose all screens when dispose is called.
+
+Therefore our main game class will extend **KtxGame<KtxScreen>**. It has two optional parameters:
+```Kotlin
+open class KtxGame<ScreenType : Screen>(firstScreen: ScreenType? = null, private val clearScreen: Boolean = true) : KtxApplicationAdapter {
+/** Holds references to all screens registered with [addScreen]. Allows to get a reference of the screen instance
+   * knowing only its type. */
+  protected val screens: ObjectMap<Class<out ScreenType>, ScreenType> = ObjectMap()
+  /** Currently shown screen. Unless overridden with [setScreen], uses an empty mock-up implementation to work around
+   * nullability and `lateinit` issues. [shownScreen] is a public property exposing this value as [ScreenType].
+   * @see shownScreen */
+  protected var currentScreen: Screen = firstScreen ?: emptyScreen()
+  // ...
+}
+```
+1. **firstScreen**: This will define the initial screen when starting up your game. Since our first screen will require some additional information we cannot pass it immediatly and therefore we don't specify it.<br>
+In this case it will use the **emptyScreen()** implementation from LibKTX which is a **KtxScreen** implementation which overrides all **Screen** methods with an empty body
+2. **clearScreen**: default is **true** which means that at the beginning of the **render** method KtxGame will automatically clear the screen before calling the screen's render method. In my opinion this is a desired behavior for almost every game and it is nice that LibKTX takes care of that for us automatically.<br>
+
+    ```Kotlin
+    override fun render() {
+        if (clearScreen) {
+          clearScreen(0f, 0f, 0f, 1f)
+        }
+        currentScreen.render(Gdx.graphics.deltaTime)
+    }
+
+    inline fun clearScreen(red: Float, green: Float, blue: Float, alpha: Float = 1f) {
+        Gdx.gl.glClearColor(red, green, blue, alpha)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+    }
+    ```
+
+***
+
+Besides **KtxGame** there is also **KtxScreen** and our screens (MainMenuScreen and GameScreen) will implement KtxScreen instead of the normal LibGDX Screen interface. <br>
+This is also a convenient way to only implement those methods that you need since there is no _ScreenAdapter_ in LibGDX available.
+
+You can add screens to your game via **addScreen** and change to a specific screen via **setScreen**.<br>
+Note that you cannot add the same screen multiple times to the game. If you want to do that you first need to call **removeScreen** before adding the screen again.
+```Kotlin
+override fun create() {
+    // ...
+    addScreen(MainMenuScreen(this))
+    setScreen<MainMenuScreen>()
+    super.create()
+}
+```
+
+***
+
+Let's check-out some of the code changes including some general coding conventions and Kotlin best practices. This reduces the lines of code needed quite a bit and is easier to read and maintain.<br>
+The final code can be checked out with the [01-app branch](https://github.com/Quillraven/SimpleKtxGame/tree/01-app).
+
+* We are now using **KtxGame** instead of **Game** and by adding the MainMenuScreen via `addScreen` and setting it via `setScreen`, our game will start with the MainMenu. <br>
+Also, a call to `super.dispose()` will automatically call the dispose method of all screens added via _addScreen_. <br>
+In addition we changed **lateinit var** batch and font to **val by lazy** because a batch should not get reassigned and with lazy initialization these resources are really only allocated the first time they are used, which is a nicer solution in my opinion.
+
+    ```Kotlin
+    class Game : KtxGame<KtxScreen>() {
+        val batch by lazy { SpriteBatch() }
+        // use LibGDX's default Arial font
+        val font by lazy { BitmapFont() }
+
+        override fun create() {
+            addScreen(MainMenuScreen(this))
+            setScreen<MainMenuScreen>()
+            super.create()
+        }
+
+        override fun dispose() {
+            batch.dispose()
+            font.dispose()
+            super.dispose()
+        }
+    }
+    ```
+
+* For the **MainMenuScreen** we got rid of the `init` block since the camera can be directly assigned. Using `apply` also allows us to directly call `setToOrtho` within a single line. <br>
+Since we are implementing **KtxScreen** we do not need to override `hide`, `show`, `pause`, `resume`, `resize` and `dispose` anymore. <br>
+With Kotlin we can also use the **property access** syntax instead of calling the _setter_ methods. E.g. `game.batch.setProjectionMatrix(camera.combined)` can be simplified to `game.batch.projectionMatrix = camera.combined`. <br>
+We no longer need to call `Gdx.gl.glClearColor` and `Gdx.gl.glClear` because this is already done within **KtxGame**. <br>
+Finally, we are _adding_ and _setting_ our **GameScreen** and we __remove__ and __dispose__ our MainMenuScreen since it will no longer be needed. <br>
+As a minor thing we change `var camera` to `val camera` since the camera won't be reassigned.
+
+    ```Kotlin
+    class MainMenuScreen(val game: Game) : KtxScreen {
+        private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
+
+        override fun render(delta: Float) {
+            camera.update()
+            game.batch.projectionMatrix = camera.combined
+
+            game.batch.begin()
+            game.font.draw(game.batch, "Welcome to Drop!!! ", 100f, 150f)
+            game.font.draw(game.batch, "Tap anywhere to begin!", 100f, 100f)
+            game.batch.end()
+
+            if (Gdx.input.isTouched) {
+                game.addScreen(GameScreen(game))
+                game.setScreen<GameScreen>()
+                game.removeScreen<MainMenuScreen>()
+                dispose()
+            }
+        }
+    }
+    ```
+
+* As a last step we also simplify our **GameScreen**. Similar to the **MainMenuScreen** we can do all the assignments of our variables directly and by moving the `spawnRainDrop()` call from the `init` block to the `show` method gets rid of the `init` block. We again use the **property access** syntax, override only the necessary methods and don't call the _glClear_ methods. <br>
+Next we optimize our `spawnRainDrop` method by using the **Rectangle** constructor with four parameters and directly adding it to our **raindrops** array. <br>
+Thanks to Kotlin we can also avoid the string concatenation of **"Drops Collected: " + dropsGathered** and change it to a string template **"Drops Collected: $dropsGathered"**. <br>
+There is also an easier way to keep the bucket's x value within its boundaries. We use the `MathUtils.clamp(bucket.x, 0f, 800f - 64f)` method for it which as a first parameter takes the value to clamp. Second parameter is the minimum value and the third parameter is the maximum value. <br>
+We can also change `Gdx.graphics.getDeltaTime()` to `delta` which is passed to the Screen's render method and represents the same value. <br>
+Again, we change all `var` to `val` where possible and we can also simplify `lastDropTime: Long = 0L` and `dropsGathered: Int = 0` to `lastDropTime = 0L` and `dropsGathered = 0`. 
+
+    ```Kotlin
+    class GameScreen(val game: Game) : KtxScreen {
+        // load the images for the droplet & bucket, 64x64 pixels each
+        private val dropImage = Texture(Gdx.files.internal("images/drop.png"))
+        private val bucketImage = Texture(Gdx.files.internal("images/bucket.png"))
+        // load the drop sound effect and the rain background music
+        private val dropSound = Gdx.audio.newSound(Gdx.files.internal("sounds/drop.wav"))
+        private val rainMusic = Gdx.audio.newMusic(Gdx.files.internal("music/rain.mp3")).apply { isLooping = true }
+        // The camera ensures we can render using our target resolution of 800x480
+        //    pixels no matter what the screen resolution is.
+        private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
+        // create a Rectangle to logically represent the bucket
+        // center the bucket horizontally
+        // bottom left bucket corner is 20px above
+        private val bucket = Rectangle(800f / 2f - 64f / 2f, 20f, 64f, 64f)
+        // create the touchPos to store mouse click position
+        private val touchPos = Vector3()
+        // create the raindrops array and spawn the first raindrop
+        private val raindrops = Array<Rectangle>() // gdx, not Kotlin Array
+        private var lastDropTime = 0L
+        private var dropsGathered = 0
+
+        private fun spawnRaindrop() {
+            raindrops.add(Rectangle(MathUtils.random(0f, 800f - 64f), 480f, 64f, 64f))
+            lastDropTime = TimeUtils.nanoTime()
+        }
+
+        override fun render(delta: Float) {
+            // generally good practice to update the camera's matrices once per frame
+            camera.update()
+
+            // tell the SpriteBatch to render in the coordinate system specified by the camera.
+            game.batch.projectionMatrix = camera.combined
+
+            // begin a new batch and draw the bucket and all drops
+            game.batch.begin()
+            game.font.draw(game.batch, "Drops Collected: $dropsGathered", 0f, 480f)
+            game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height)
+            for (raindrop in raindrops) {
+                game.batch.draw(dropImage, raindrop.x, raindrop.y)
+            }
+            game.batch.end()
+
+            // process user input
+            if (Gdx.input.isTouched) {
+                touchPos.set(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
+                camera.unproject(touchPos)
+                bucket.x = touchPos.x - 64f / 2f
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                bucket.x -= 200 * delta
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                bucket.x += 200 * delta
+            }
+
+            // make sure the bucket stays within the screen bounds
+            bucket.x = MathUtils.clamp(bucket.x, 0f, 800f - 64f)
+
+            // check if we need to create a new raindrop
+            if (TimeUtils.nanoTime() - lastDropTime > 1_000_000_000L) {
+                spawnRaindrop()
+            }
+
+            // move the raindrops, remove any that are beneath the bottom edge of the
+            //    screen or that hit the bucket.  In the latter case, play back a sound
+            //    effect also
+            val iter = raindrops.iterator()
+            while (iter.hasNext()) {
+                val raindrop = iter.next()
+                raindrop.y -= 200 * delta
+                if (raindrop.y + 64 < 0)
+                    iter.remove()
+    
+                if (raindrop.overlaps(bucket)) {
+                    dropsGathered++
+                    dropSound.play()
+                    iter.remove()
+                }
+            }
+        }
+
+        override fun show() {
+            // start the playback of the background music when the screen is shown
+            rainMusic.play()
+            spawnRaindrop()
+        }
+
+        override fun dispose() {
+            dropImage.dispose()
+            bucketImage.dispose()
+            dropSound.dispose()
+            rainMusic.dispose()
+        }
+    }
+    ```
+
+***
+
+This ends the basic LibKTX application section. The final code can be checked out via the [01-app branch](https://github.com/Quillraven/SimpleKtxGame/tree/01-app). <br>
+In the [next section](https://github.com/Quillraven/SimpleKtxGame/wiki/Graphics-and-Collections) we will look into the **graphics** and **collections** extensions provided by **LibKTX** to also make our life easier when working with **SpriteBatch** and **Collections**.
