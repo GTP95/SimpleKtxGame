@@ -43,14 +43,14 @@ ghostwriter--Sidebar QScrollBar::vertical {
 ghostwriter--MarkdownEditor QScrollBar::horizontal:hover,
 ghostwriter--HtmlPreview QScrollBar::horizontal:hover,
 ghostwriter--Sidebar QScrollBar::horizontal:hover {
-    background-color: #e0e3e4;
+    background-color: #202325;
     border-radius: 3px;
 }
 
 ghostwriter--MarkdownEditor QScrollBar::vertical:hover,
 ghostwriter--HtmlPreview QScrollBar::vertical:hover,
 ghostwriter--Sidebar QScrollBar::vertical:hover {
-    background-color: #e0e3e4;
+    background-color: #202325;
     border-radius: 3px;
 }
 
@@ -59,7 +59,7 @@ ghostwriter--HtmlPreview QScrollBar::handle:horizontal,
 ghostwriter--Sidebar QScrollBar::handle:horizontal {
     min-width: 50px;
     border: 0;
-    background: #b4bcc0;
+    background: #444749;
     border-radius: 3px;
 
 }
@@ -69,7 +69,7 @@ ghostwriter--HtmlPreview QScrollBar::handle:horizontal,
 ghostwriter--Sidebar QScrollBar::handle:horizontal {
     min-width: 50px;
     border: 0;
-    background: #b4bcc0;
+    background: #444749;
     border-radius: 3px;
 }
 
@@ -78,7 +78,7 @@ ghostwriter--HtmlPreview QScrollBar::handle:vertical,
 ghostwriter--Sidebar QScrollBar::handle:vertical {
     min-height: 50px;
     border: 0;
-    background: #b4bcc0;
+    background: #444749;
     border-radius: 3px;
 }
 
@@ -121,13 +121,13 @@ ghostwriter--Sidebar QScrollBar::right-arrow {
 /******************************************************************************/
 
 QMainWindow QMenuBar {
-    color: #2d363a;
-    background-color: #eff0f1;
+    color: #bdc3c7;
+    background-color: #151719;
     font-size: 10pt;
     spacing: 2px;
     border: 0px;
     border-bottom: 1px;
-    border-color: #d1d6d8;
+    border-color: #2c2f31;
     border-style: solid;
     padding: 1px 0px 1px 0px;
 }
@@ -140,15 +140,15 @@ QMainWindow QMenuBar::item {
 }
 
 QMainWindow QMenuBar::item:selected {
-    background-color: #c4c5c6;
+    background-color: #25282c;
 }
 
 QMainWindow QMenuBar::item:hover {
-    background-color: #cacbcc;
+    background-color: #373d42;
 }
 
 QMainWindow QMenuBar::item:pressed {
-    background-color: #b8b8b9;
+    background-color: #1f2225;
 }
 
 /******************************************************************************/
@@ -157,8 +157,8 @@ QMainWindow QMenuBar::item:pressed {
 
 QMainWindow QMenu,
 QMenuBar QMenu {
-    color: #2d363a;
-    background-color: #e7e9ea;
+    color: #bdc3c7;
+    background-color: #1a1d1f;
     border: 0px;
     padding: 7px 0px 7px 0px;
 }
@@ -174,7 +174,7 @@ QMainWindow QMenu::indicator,
 QMenuBar QMenu::indicator {
     width: 16px;
     height: 16px;
-    background-color: #c4c5c6;
+    background-color: #25282c;
     padding: 0px 5px 0px 5px;
     margin: 0px 5px 0px 5px;
 }
@@ -183,11 +183,11 @@ QMainWindow QMenu::indicator::unchecked,
 QMenuBar QMenu::indicator::unchecked {
     width: 16px;
     height: 16px;
-    background-color: #c4c5c6;
+    background-color: #25282c;
     border-radius: 2px;
     border-style: solid;
     border-width: 1px;
-    border-color: #2d363a;
+    border-color: #bdc3c7;
     margin: 0px 5px 0px 5px;
 }
 
@@ -195,18 +195,18 @@ QMainWindow QMenu::indicator::checked,
 QMenuBar QMenu::indicator::checked {
     width: 16px;
     height: 16px;
-    background-color: #93cee9;
+    background-color: #074051;
     border-radius: 2px;
     border-style: solid;
     border-width: 1px;
-    border-color: #2d363a;
+    border-color: #bdc3c7;
     margin: 0px 5px 0px 5px;
 }
 
 QMainWindow QMenu::item:selected,
 QMenuBar QMenu::item::selected {
-    background-color: #93cee9;
-    color: #2d363a;
+    background-color: #074051;
+    color: #bdc3c7;
 }
 
 QMainWindow QMenu::icon,
@@ -219,7 +219,7 @@ QMenuBar QMenu::icon {
 
 QMainWindow QMenu::icon::checked,
 QMenuBar QMenu::icon::checked {
-    background-color: #cacbcc;
+    background-color: #373d42;
 }
 
 /******************************************************************************/
@@ -230,10 +230,10 @@ QMainWindow QPlainTextEdit {
     border: 0;
     margin: 0;
     padding: 5px;
-    background-color: #eff0f1;
-    color: #2d363a;
-    selection-color: #2d363a;
-    selection-background-color: #93cee9;
+    background-color: #151719;
+    color: #bdc3c7;
+    selection-color: #bdc3c7;
+    selection-background-color: #074051;
     font-family: Noto Sans Mono;
     font-size: 12pt;
 }
@@ -242,7 +242,7 @@ QMainWindow QSplitter::handle {
     border: 0;
     padding: 0;
     margin: 0;
-    background-color: #d1d6d8;
+    background-color: #2c2f31;
 }
 
 QMainWindow QSplitter::handle:vertical {
@@ -263,14 +263,14 @@ QSplitter ghostwriter--Sidebar {
     border: 0;
     margin: 0;
     padding: 0;
-    background-color: #eff0f1;
+    background-color: #151719;
 }
 
 ghostwriter--Sidebar QStackedWidget {
     border: 0;
     padding: 1;
     margin: 0;
-    background-color: #eff0f1;
+    background-color: #151719;
     border-width: 0px;
 }
 
@@ -285,7 +285,7 @@ ghostwriter--Sidebar QPushButton[checkable="true"] {
     padding: 0;
     border: 0;
     background-color: transparent;
-    color: #5d7078;
+    color: #8b8f92;
     border-width: 0px;
     border-left-width: 3px;
     border-style: solid;
@@ -295,18 +295,18 @@ ghostwriter--Sidebar QPushButton[checkable="true"] {
 
 ghostwriter--Sidebar QPushButton:checked {
     border-color: #3daee9;
-    color: #2d363a;
-    background-color: #e0e3e4;
+    color: #bdc3c7;
+    background-color: #202325;
 }
 
 ghostwriter--Sidebar QPushButton:hover {
-    background-color: #e0e3e4;
+    background-color: #202325;
 }
 
 ghostwriter--Sidebar QPushButton:checked:hover {
     border-color: #3daee9;
-    color: #2d363a;
-    background-color: #e0e3e4;
+    color: #bdc3c7;
+    background-color: #202325;
 }
 
 /* Activity bar buttons */
@@ -317,18 +317,18 @@ ghostwriter--Sidebar QPushButton[checkable="false"] {
     border: 0;
     border-radius: 5px;
     background-color: transparent;
-    color: #5d7078;
+    color: #8b8f92;
     width: 40px;
     height: 40px;
 }
 
 ghostwriter--Sidebar QPushButton[checkable="false"]:hover {
-    color: #2d363a;
-    background-color: #e0e3e4;
+    color: #bdc3c7;
+    background-color: #202325;
 }
 
 ghostwriter--Sidebar QPushButton[checkable="false"]:pressed {
-    color: #2d363a;
+    color: #bdc3c7;
     background-color: transparent;
 }
 
@@ -338,8 +338,8 @@ ghostwriter--Sidebar QListWidget {
     outline: none;
     border: 0;
     padding: 1;
-    background-color: #eff0f1;
-    color: #2d363a;
+    background-color: #151719;
+    color: #bdc3c7;
     font-size: 11pt;
     font-weight: normal
 }
@@ -348,15 +348,15 @@ ghostwriter--Sidebar QListWidget::item {
     border: 0;
     padding: 1 0 1 0;
     margin: 0;
-    background-color: #eff0f1;
-    color: #2d363a;
+    background-color: #151719;
+    color: #bdc3c7;
     font-weight: normal
 }
 
 ghostwriter--Sidebar QListWidget::item:selected {
     border-radius: 0px;
-    color: #2d363a;
-    background-color: #93cee9;
+    color: #bdc3c7;
+    background-color: #074051;
 }
 
 ghostwriter--Sidebar QLabel {
@@ -365,7 +365,7 @@ ghostwriter--Sidebar QLabel {
     margin: 0;
     background-color: transparent;
     font-size: 11pt;
-    color: #2d363a;
+    color: #bdc3c7;
 }
 
 /******************************************************************************/
@@ -375,12 +375,12 @@ ghostwriter--Sidebar QLabel {
 QStatusBar {
     margin: 0;
     padding: 0;
-    border-top: 1px solid #d1d6d8;
+    border-top: 1px solid #2c2f31;
     border-left: 0;
     border-right: 0;
     border-bottom: 0;
-    background: #eff0f1;
-    color: #5d7078;
+    background: #151719;
+    color: #8b8f92;
 }
 
 QStatusBar QLabel {
@@ -389,7 +389,7 @@ QStatusBar QLabel {
     padding: 5px;
     border: 0;
     background: transparent;
-    color: #5d7078;
+    color: #8b8f92;
 }
 
 QStatusBar QToolButton {
@@ -397,7 +397,7 @@ QStatusBar QToolButton {
     margin: 0;
     border: 0;
     border-radius: 5px;
-    color: #5d7078;
+    color: #8b8f92;
     background-color: transparent;
     font-size: 16px;
     width: 32px;
@@ -406,18 +406,18 @@ QStatusBar QToolButton {
 
 QStatusBar QToolButton:hover,
 QStatusBar QToolButton:checked:hover {
-    background-color: #cacbcc;
+    background-color: #373d42;
 }
 
 QStatusBar QToolButton:pressed,
 QStatusBar QToolButton:checked:pressed {
-    color: #576970;
-    background-color: #b8b8b9;
+    color: #73777a;
+    background-color: #1f2225;
 }
 
 QStatusBar QToolButton:flat,
 QStatusBar QToolButton:checked {
-    background-color: #c4c5c6;
+    background-color: #25282c;
 }
 
 QStatusBar QComboBox {
@@ -425,8 +425,8 @@ QStatusBar QComboBox {
     border: 0px;
     margin: 0;
     padding: 0;
-    color: #5d7078;
-    background-color: #eff0f1;
+    color: #8b8f92;
+    background-color: #151719;
     font-size: 11pt;
 }
 
@@ -437,8 +437,8 @@ QStatusBar QComboBox:hover {
 QStatusBar QListView {
     padding: 7px 0px 7px 0px;
     margin: 0px;
-    color: #2d363a;
-    background-color: #eff0f1;
+    color: #bdc3c7;
+    background-color: #151719;
 }
 
 QStatusBar QListView::item {
@@ -448,8 +448,8 @@ QStatusBar QListView::item {
 }
 
 QStatusBar QListView::item:selected {
-    background-color: #93cee9;
-    color: #2d363a;
+    background-color: #074051;
+    color: #bdc3c7;
 }
 
 QStatusBar QComboBox::drop-down {
@@ -466,12 +466,12 @@ QStatusBar QComboBox::down-arrow {
     padding: 0;
     height: 14px;
     width: 14px;
-    image: url(/tmp/lhWAaT.png)
+    image: url(/tmp/Biusgb.png)
 }
 
 QStatusBar QComboBox::drop-down:hover {
     border-radius: 10px;
-    background-color: #cacbcc;
+    background-color: #373d42;
 }
 
 QStatusBar #leftStatusBarWidget,
@@ -492,7 +492,7 @@ ghostwriter--FindReplace QLabel {
     padding: 5px;
     border: 0;
     background: transparent;
-    color: #5d7078;
+    color: #8b8f92;
 }
 
 ghostwriter--FindReplace QPushButton {
@@ -501,28 +501,28 @@ ghostwriter--FindReplace QPushButton {
     margin: 0;
     border: 0;
     border-radius: 5px;
-    color: #5d7078;
+    color: #8b8f92;
     background-color: transparent;
     min-width: 16px;
 }
 
 ghostwriter--FindReplace QPushButton:pressed {
-    color: #2a3236;
+    color: #9da2a6;
     background-color: transparent;
 }
 
 ghostwriter--FindReplace QPushButton:hover {
-    color: #2e383c;
+    color: #ffffff;
     background-color: transparent;
 }
 
 ghostwriter--FindReplace QPushButton:disabled {
-    color: #748c96;
+    color: #adb3b6;
     background-color: transparent;
 }
 
 ghostwriter--FindReplace QPushButton[checkable="true"] {
-    color: #5d7078;
+    color: #8b8f92;
     background-color: transparent;
     min-width: 32px;
     height: 16px;
@@ -530,45 +530,45 @@ ghostwriter--FindReplace QPushButton[checkable="true"] {
 
 ghostwriter--FindReplace QPushButton[checkable="true"]:disabled,
 ghostwriter--FindReplace QPushButton:flat:disabled {
-    color: #748c96;
-    background-color: #cecfd0;
+    color: #adb3b6;
+    background-color: #272a2e;
 }
 
 ghostwriter--FindReplace QPushButton[checkable="true"]:hover,
 ghostwriter--FindReplace QPushButton:checked:hover {
-    background-color: #60737c;
-    background-color: #cacbcc;
+    background-color: #d0d7db;
+    background-color: #373d42;
 }
 
 ghostwriter--FindReplace QPushButton[checkable="true"]:pressed,
 ghostwriter--FindReplace QPushButton:checked:pressed {
-    color: #576970;
-    background-color: #b8b8b9;
+    color: #73777a;
+    background-color: #1f2225;
 }
 
 ghostwriter--FindReplace QPushButton:checked {
-    background-color: #c4c5c6;
+    background-color: #25282c;
 }
 
 ghostwriter--FindReplace QPushButton:flat {
-    color: #5d7078;
-    background-color: #c4c5c6;
+    color: #8b8f92;
+    background-color: #25282c;
     font-weight: bold;
 }
 
 ghostwriter--FindReplace QPushButton:flat:hover {
-    color: #60737c;
-    background-color: #cacbcc;
+    color: #d0d7db;
+    background-color: #373d42;
 }
 
 ghostwriter--FindReplace QPushButton:flat:pressed {
-    color: #576970;
-    background-color: #b8b8b9;
+    color: #73777a;
+    background-color: #1f2225;
 }
 
 ghostwriter--FindReplace QPushButton:flat:disabled {
-    color: #748c96;
-    background-color: #cecfd0;
+    color: #adb3b6;
+    background-color: #272a2e;
 }
 
 ghostwriter--FindReplace QPushButton#matchCaseButton,
@@ -591,14 +591,14 @@ ghostwriter--FindReplace QPushButton#findReplaceCloseButton {
 }
 
 ghostwriter--FindReplace QLineEdit {
-    color: #2d363a;
-    background-color: #e0e3e4;
+    color: #bdc3c7;
+    background-color: #202325;
     border: 0px;
     border-radius: 3px;
-    selection-color: #2d363a;
-    selection-background-color: #93cee9;
+    selection-color: #bdc3c7;
+    selection-background-color: #074051;
 }
 
 ghostwriter--FindReplace QLineEdit:focus {
-    border: 1px solid #d9dcdd;
+    border: 1px solid #1d2022;
 }

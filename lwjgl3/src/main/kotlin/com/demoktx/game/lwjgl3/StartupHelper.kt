@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 //Note, the above license and copyright applies to this file only.
-package com.simplektx.game.lwjgl3
+package com.demoktx.game.lwjgl3
 
 import org.lwjgl.system.macosx.LibC
 import java.io.BufferedReader

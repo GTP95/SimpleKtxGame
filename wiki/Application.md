@@ -8,80 +8,47 @@ In this part we will improve the **Game** and **Screen** classes by using the **
 
 ***
 
-To use the [KTX app](https://github.com/libktx/ktx/blob/master/app/README.md) extension we first need to update our project's **build.gradle** file by adding a **ktxVersion** variable and a new dependency to our **core** project.
+If you open the `core/src/main/kotlin/com/demoktx/game/DemoGame.kt` file, you will see the following code:
+```Kotlin
+package com.demoktx.game
 
-**Please note that the gdxVersion and ktxVersion should match. When I wrote this tutorial I used libGDX 1.9.9 and libKTX 1.9.9-b1. As of today (2020-12-02) I recommend to use libGDX 1.9.12 and libKTX 1.9.12-b1. Refer to [KTX version](https://github.com/libktx/ktx/releases) and [LibGDX version](https://github.com/libgdx/libgdx/releases) to see the latest stable releases that you can use.**
+import com.badlogic.gdx.ApplicationAdapter
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.utils.ScreenUtils
 
-```Diff
-allprojects {
-    apply plugin: "idea"
+/** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
+class DemoGame : ApplicationAdapter() {
+    private val batch by lazy { SpriteBatch() }
+    private val image by lazy { Texture("libgdx.png") }
 
-    version = '1.0'
-    ext {
-        appName = "A simple libktx game"
-        gdxVersion = '1.9.9'
-        roboVMVersion = '2.3.6'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.7.3'
-        aiVersion = '1.8.1'
-+        ktxVersion = '1.9.9-b1'
+    override fun render() {
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f)
+        batch.begin()
+        batch.draw(image, 140f, 210f)
+        batch.end()
     }
 
-    repositories {
-        //...
-    }
-}
-// ...
-project(":core") {
-    apply plugin: "kotlin"
-
-    dependencies {
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-+        api "io.github.libktx:ktx-app:$ktxVersion"
+    override fun dispose() {
+        batch.dispose()
+        image.dispose()
     }
 }
 ```
-Re-sync your gradle project to be able to use the new **KTX app** extensions.
 
-***
-
-As mentioned in the [LibGDX Extending the Simple Game](https://github.com/libgdx/libgdx/wiki/Extending-the-simple-game) wikipedia page it is a good practice to use the **Game** and **Screen** class.
+As mentioned in the [LibGDX Extending the Simple Game](https://libgdx.com/wiki/start/simple-game-extended) wiki page it is a good practice to use the **Game** and **Screen** classes.
 I think everyone who used these classes before knows that you will need to write your own _ScreenCache_ or something similar to avoid creating new screens all the time and to remember the old status of your screen when switching between them. <br>
 The second thing is that you always had to manually take care of **disposing** screens and usually you anyway want to do that when your game's `dispose()` method is called.
 
 What a coincidence but LibKTX will take care of that for us with its [KtxGame](https://github.com/libktx/ktx/blob/master/app/src/main/kotlin/ktx/app/game.kt) implementation! It will have an internal _ScreenCache_ and it will automatically dispose all screens when dispose is called.
 
-Therefore our main game class will extend **KtxGame<KtxScreen>**. It has two optional parameters:
-```Kotlin
-open class KtxGame<ScreenType : Screen>(firstScreen: ScreenType? = null, private val clearScreen: Boolean = true) : KtxApplicationAdapter {
-/** Holds references to all screens registered with [addScreen]. Allows to get a reference of the screen instance
-   * knowing only its type. */
-  protected val screens: ObjectMap<Class<out ScreenType>, ScreenType> = ObjectMap()
-  /** Currently shown screen. Unless overridden with [setScreen], uses an empty mock-up implementation to work around
-   * nullability and `lateinit` issues. [shownScreen] is a public property exposing this value as [ScreenType].
-   * @see shownScreen */
-  protected var currentScreen: Screen = firstScreen ?: emptyScreen()
-  // ...
-}
-```
+Therefore, our main game class will extend **KtxGame<KtxScreen>**. It has two optional parameters:
+
 1. **firstScreen**: This will define the initial screen when starting up your game. Since our first screen will require some additional information we cannot pass it immediatly and therefore we don't specify it.<br>
 In this case it will use the **emptyScreen()** implementation from LibKTX which is a **KtxScreen** implementation which overrides all **Screen** methods with an empty body
 2. **clearScreen**: default is **true** which means that at the beginning of the **render** method KtxGame will automatically clear the screen before calling the screen's render method. In my opinion this is a desired behavior for almost every game and it is nice that LibKTX takes care of that for us automatically.<br>
-
-    ```Kotlin
-    override fun render() {
-        if (clearScreen) {
-          clearScreen(0f, 0f, 0f, 1f)
-        }
-        currentScreen.render(Gdx.graphics.deltaTime)
-    }
-
-    inline fun clearScreen(red: Float, green: Float, blue: Float, alpha: Float = 1f) {
-        Gdx.gl.glClearColor(red, green, blue, alpha)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-    }
-    ```
 
 ***
 

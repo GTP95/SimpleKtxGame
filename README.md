@@ -1,8 +1,8 @@
-# Demo Ktx Game
+# DemoKtxGame
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
-This project was generated with a template that includes Kotlin application launchers and draws the libGDX logo within the application listener.
+This project was generated with a Kotlin project template that includes Kotlin application launchers and [KTX](https://libktx.github.io/) utilities.
 
 ## Platforms
 
