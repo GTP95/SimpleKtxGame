@@ -50,6 +50,7 @@ class FirstScreen : KtxScreen {
 }
 ```
 
+Note that there are two classes inside this file: DemoGame, which is the entry point of our game, and FirstScreen, that takes care of rendering the LibKTX logo.  
 As mentioned in the [LibGDX Extending the Simple Game](https://libgdx.com/wiki/start/simple-game-extended) wiki page it is a good practice to use the **Game** and **Screen** classes.
 I think everyone who used these classes before knows that you will need to write your own _ScreenCache_ or something similar to avoid creating new screens all the time and to remember the old status of your screen when switching between them. <br>
 The second thing is that you always had to manually take care of **disposing** screens and usually you anyway want to do that when your game's `dispose()` method is called.
@@ -107,7 +108,7 @@ In addition we changed **lateinit var** batch and font to **val by lazy** becaus
     }
     ```
 
-* For the **MainMenuScreen** we got rid of the `init` block since the camera can be directly assigned. Using `apply` also allows us to directly call `setToOrtho` within a single line. <br>
+* For the **MainMenuScreen** class, we got rid of the `init` block since the camera can be directly assigned. Using `apply` also allows us to directly call `setToOrtho` within a single line. <br>
 Since we are implementing **KtxScreen** we do not need to override `hide`, `show`, `pause`, `resume`, `resize` and `dispose` anymore. <br>
 With Kotlin we can also use the **property access** syntax instead of calling the _setter_ methods. E.g. `game.batch.setProjectionMatrix(camera.combined)` can be simplified to `game.batch.projectionMatrix = camera.combined`. <br>
 We no longer need to call `Gdx.gl.glClearColor` and `Gdx.gl.glClear` because this is already done within **KtxGame**. <br>
