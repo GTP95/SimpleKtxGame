@@ -17,6 +17,10 @@ import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.collections.iterate
 import ktx.graphics.*
+import ktx.log.debug
+import ktx.log.logger
+
+private val log = logger<GameScreen>()
 
 class DemoGame : KtxGame<KtxScreen>() {
     val batch by lazy { SpriteBatch() }
@@ -125,8 +129,11 @@ class GameScreen(val game: DemoGame) : KtxScreen {
         //    effect also
         raindrops.iterate { raindrop, iterator ->
             raindrop.y -= 200 * delta
-            if (raindrop.y + 64 < 0)
+
+            if (raindrop.y + 64 < 0) {
+                log.debug { "Missed a raindrop!" }
                 iterator.remove()
+            }
 
             if (raindrop.overlaps(bucket)) {
                 dropsGathered++
@@ -143,6 +150,7 @@ class GameScreen(val game: DemoGame) : KtxScreen {
     }
 
     override fun dispose() {
+        log.debug { "Disposing ${this.javaClass.simpleName}" }
         dropImage.dispose()
         bucketImage.dispose()
         dropSound.dispose()

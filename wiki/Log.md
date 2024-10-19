@@ -3,17 +3,12 @@ Without further ado let's jump into **logging**. Please refer to the [official L
 
 ***
 
-So, what is the first thing we need to do? Correct! Update our **project's build.gradle** file and re-sync the project :)
+So, what is the first thing we need to do? Correct! Double-check our **project's build.gradle** file to confirm that we have the following line in the `dependencies` section.
 
-```Diff
-        // ...
-        api "io.github.libktx:ktx-app:$ktxVersion"
-        api "io.github.libktx:ktx-collections:$ktxVersion"
-        api "io.github.libktx:ktx-graphics:$ktxVersion"
-+       api "io.github.libktx:ktx-log:$ktxVersion"
-    }
-}
+```Gradle
+    api "io.github.libktx:ktx-log:$ktxVersion"
 ```
+If not, add it and re-sync the project :)
 
 After that we can already use the [LibKTX log](https://github.com/libktx/ktx/blob/master/log/README.md) extensions. Please refer to the **Why?** section of this documentation as it already explains the benefits of using LibKTX for logging. In short, it addresses the unnecesarry string building, creation and vararg calls by introducing **inlined lambdas** which means that instead of Java's
 
@@ -67,20 +62,29 @@ override fun dispose() {
 }
 // ...
 ```
-
-To see our new debug lines we also need to adjust our **DesktopLauncher** to set the correct loglevel. This can be done anywhere but we will do it in the DesktopLauncher for now. The **default** loglevel is **Info**. We will set it to **Debug**.
+**Note:** if you've been following the code changes literally so far, you may need to add curly braces to the first `if` statement. <br>
+To see our new debug lines we also need to adjust our **Lwjgl3Launcher** (`lwjgl3/src/main/kotlin/com/demoktx/game/lwjgl3/Lwjgl3Launcher.kt`) to set the correct loglevel. This can be done anywhere, but we will do it in the Lwjgl3Launcher for now. The **default** loglevel is **Info**. We will set it to **Debug**.
 
 ```Kotlin
-object DesktopLauncher {
-    @JvmStatic
-    fun main(arg: Array<String>) {
-        val config = LwjglApplicationConfiguration().apply {
-            title = "Drop"
-            width = 800
-            height = 480
-        }
-        LwjglApplication(Game(), config).logLevel = Application.LOG_DEBUG
-    }
+@file:JvmName("Lwjgl3Launcher")
+
+package com.demoktx.game.lwjgl3
+
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.demoktx.game.DemoGame
+
+/** Launches the desktop (LWJGL3) application. */
+fun main() {
+    // This handles macOS support and helps on Windows.
+    if (StartupHelper.startNewJvmIfRequired())
+        return
+    Lwjgl3Application(DemoGame(), Lwjgl3ApplicationConfiguration().apply {
+        setTitle("DemoKtxGame")
+        setWindowedMode(640, 480)
+        setWindowIcon(*(arrayOf(128, 64, 32, 16).map { "libgdx$it.png" }.toTypedArray()))
+    }).logLevel = Application.LOG_DEBUG
 }
 ```
 
