@@ -1,17 +1,12 @@
 This section will introduce the LibKTX [graphics](https://github.com/libktx/ktx/blob/master/graphics/README.md) and [collections](https://github.com/libktx/ktx/blob/master/collections/README.md) extensions to see how they can further improve our life as a game developer. It is also the _last mandatory_ section for the game. All following sections are something in addition to further improve your Kotlin game development skills. <br>
 As a starting point we use the code from the [previous section](https://github.com/Quillraven/SimpleKtxGame/wiki/Application) which you can find in the repository under the [01-app branch](https://github.com/Quillraven/SimpleKtxGame/tree/01-app).
 
-First thing we need to do again is to update our project's **build.gradle** file to add the additional LibKTX extensions. Re-sync your project once you have added the two additional lines.
-```Diff
-        //...
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        api "io.github.libktx:ktx-app:$ktxVersion"
-+       api "io.github.libktx:ktx-collections:$ktxVersion"
-+       api "io.github.libktx:ktx-graphics:$ktxVersion"
-    }
-}
+First, double-check that you have the following two lines inside the `dependencies` section of the **build.gradle** file: 
+```Gradle
+    api "io.github.libktx:ktx-collections:$ktxVersion"
+    api "io.github.libktx:ktx-graphics:$ktxVersion"
 ```
+If not, add them and re-sync your project.
 
 With the new **graphics** extensions we can now replace `batch.begin()` and `batch.end()` with `batch.use { ... }`. While this is not a huge change it is still a nicer way to read the code in my opinion. <br>
 In addition there are other graphics extensions which are not used in this simple game but which are very handy. Please check them out in more detail at the LibKTX [graphics](https://github.com/libktx/ktx/blob/master/graphics/README.md) repository.
@@ -45,6 +40,12 @@ For our game we will use the `Array.iterate { ... }` extension to iterate over o
         }
     }
     ```
+  
+You may have to add the following import statement at the top of your file to use the `batch.use` extension:
+```Kotlin
+import ktx.graphics.*
+```
+
 
 * In our **GameScreen** class we can update the `render` method with the new extensions. Similar to our **MainMenuScreen** we use the `batch.use` extension but this time we rename the lambda element to batch to demonstrate this possibility and to make it clearer since we also have **it** in our **forEach** loop. We use Kotlin's `forEach` instead of the normal `for` loop and rename the lambda element to raindrop instead of **it**. <br>
 As a last step we use `iterate { ... }` to iterate over our raindrops array and to have the possibility to access the element itself and also the iterator. This way we combine following three lines
@@ -64,7 +65,7 @@ As a last step we use `iterate { ... }` to iterate over our raindrops array and 
     Here is the final code for our **GameScreen**:
 
 
-    ```Kotlin
+```Kotlin
     override fun render(delta: Float) {
             // generally good practice to update the camera's matrices once per frame
             camera.update()
@@ -97,7 +98,9 @@ As a last step we use `iterate { ... }` to iterate over our raindrops array and 
                 }
             }
         }
-    ```
+   ```
+
+Run the game once again to confirm everything still works as before.
 
 ***
 
