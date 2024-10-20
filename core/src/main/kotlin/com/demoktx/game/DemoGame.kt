@@ -17,7 +17,6 @@ import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.collections.iterate
 import ktx.graphics.*
-import ktx.log.debug
 import ktx.log.logger
 
 private val log = logger<GameScreen>()
@@ -65,6 +64,7 @@ class GameScreen(val game: DemoGame) : KtxScreen {
     // load the images for the droplet & bucket, 64x64 pixels each
     private val dropImage = Texture(Gdx.files.internal("images/drop.png"))
     private val bucketImage = Texture(Gdx.files.internal("images/bucket.png"))
+    private val background = Texture(Gdx.files.internal("images/background.png"))
     // load the drop sound effect and the rain background music
     private val dropSound = Gdx.audio.newSound(Gdx.files.internal("sounds/drop.mp3"))
     private val rainMusic = Gdx.audio.newMusic(Gdx.files.internal("music/music.mp3")).apply { isLooping = true }
@@ -96,6 +96,7 @@ class GameScreen(val game: DemoGame) : KtxScreen {
 
         // begin a new batch and draw the bucket and all drops
         game.batch.use { batch ->
+            game.batch.draw(background, 0f, 0f)
             game.font.draw(batch, "Drops Collected: $dropsGathered", 0f, 480f)
             game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height)
             for (raindrop in raindrops) {

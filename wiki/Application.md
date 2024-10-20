@@ -334,5 +334,9 @@ We already have an `assets [main]` directory. Create the following subdirectorie
 You can download these resources from the [official LibGDX tutorial](https://libgdx.com/wiki/start/a-simple-game#loading-assets) or use your own. <br>
 Now, run the application again and play with your newly created game!
 
+The game works, but we can make it prettier by having a background image instead of a black screen. As an assignment,
+try to use what you've learned so far to add a background image to the game. If you downloaded the assets from the LibGDX wiki, 
+you can use the `background.png` image provided there. Otherwise, use an image you like. <br>
+
 This ends the basic LibKTX application section. The final code can be checked out via the [01-app branch](https://github.com/Quillraven/SimpleKtxGame/tree/01-app). <br>
 In the [next section](https://github.com/Quillraven/SimpleKtxGame/wiki/Graphics-and-Collections) we will look into the **graphics** and **collections** extensions provided by **LibKTX** to also make our life easier when working with **SpriteBatch** and **Collections**.
