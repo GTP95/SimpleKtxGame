@@ -35,6 +35,22 @@ First we create a **private toplevel** log which is the fastest and best way to 
 class GameScreen(val game: Game) : KtxScreen {
 // ...
 ```
+Then, inside the `create()` method of the `DemoGame` class we add the following line, to set the log level to **Debug**.
+
+```Kotlin
+Gdx.app.setLogLevel(Application.LOG_DEBUG);
+```
+
+The `create()` method should look like this:
+```kotlin
+override fun create() {
+        KtxAsync.initiate()
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        addScreen(MainMenuScreen(this))
+        setScreen<MainMenuScreen>()
+        super.create()
+    }
+```
 
 After that we can log anything related to our GameScreen file. We will add following two debug lines.
 
@@ -63,30 +79,6 @@ override fun dispose() {
 // ...
 ```
 **Note:** if you've been following the code changes literally so far, you may need to add curly braces to the first `if` statement. <br>
-To see our new debug lines we also need to adjust our **Lwjgl3Launcher** (`lwjgl3/src/main/kotlin/com/demoktx/game/lwjgl3/Lwjgl3Launcher.kt`) to set the correct loglevel. This can be done anywhere, but we will do it in the Lwjgl3Launcher for now. The **default** loglevel is **Info**. We will set it to **Debug**.
-
-```Kotlin
-@file:JvmName("Lwjgl3Launcher")
-
-package com.demoktx.game.lwjgl3
-
-import com.badlogic.gdx.Application
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import com.demoktx.game.DemoGame
-
-/** Launches the desktop (LWJGL3) application. */
-fun main() {
-    // This handles macOS support and helps on Windows.
-    if (StartupHelper.startNewJvmIfRequired())
-        return
-    Lwjgl3Application(DemoGame(), Lwjgl3ApplicationConfiguration().apply {
-        setTitle("DemoKtxGame")
-        setWindowedMode(640, 480)
-        setWindowIcon(*(arrayOf(128, 64, 32, 16).map { "libgdx$it.png" }.toTypedArray()))
-    }).logLevel = Application.LOG_DEBUG
-}
-```
 
 And with that we are done with logging basics! I told you it will be short ;) The final code can be checked out with the [03-log branch](https://github.com/Quillraven/SimpleKtxGame/tree/03-log).<br>
 [Next](https://github.com/Quillraven/SimpleKtxGame/wiki/Assets-and-TextureAtlas) we will introduce a better way of handling our **assets** like textures, music and sounds. Also, we will improve **render performance** by using a **TextureAtlas** to avoid texture swapping.

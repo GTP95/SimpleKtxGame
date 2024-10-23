@@ -1,5 +1,6 @@
 package com.demoktx.game
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -27,6 +28,7 @@ class DemoGame : KtxGame<KtxScreen>() {
 
     override fun create() {
         KtxAsync.initiate()
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
         addScreen(MainMenuScreen(this))
         setScreen<MainMenuScreen>()
         super.create()
