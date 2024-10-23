@@ -2,7 +2,6 @@
 
 package com.demoktx.game.lwjgl3
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.demoktx.game.DemoGame
