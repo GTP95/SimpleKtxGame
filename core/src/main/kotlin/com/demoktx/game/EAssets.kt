@@ -1,3 +1,5 @@
+package com.demoktx.game
+
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.audio.Sound
@@ -23,7 +25,7 @@ operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
 
 // texture atlas
 enum class TextureAtlasAssets(val path: String) {
-    Game("images/game.atlas")
+    Game("atlases/game.atlas")
 }
 
 fun AssetManager.load(asset: TextureAtlasAssets) = load<TextureAtlas>(asset.path)

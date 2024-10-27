@@ -18,8 +18,8 @@ import ktx.app.KtxScreen
 import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.collections.iterate
-import ktx.graphics.*
 import ktx.log.logger
+import ktx.graphics.use
 
 private val log = logger<GameScreen>()
 
@@ -75,12 +75,12 @@ class LoadingScreen(val game: DemoGame) : KtxScreen {
 
 class GameScreen(val game: DemoGame) : KtxScreen {
     // load the images for the droplet & bucket, 64x64 pixels each
-    private val dropImage = Texture(Gdx.files.internal("images/drop.png"))
-    private val bucketImage = Texture(Gdx.files.internal("images/bucket.png"))
-    private val background = Texture(Gdx.files.internal("images/background.png"))
+    private val dropImage = game.assets[TextureAtlasAssets.Game].findRegion("drop")
+    private val bucketImage = game.assets[TextureAtlasAssets.Game].findRegion("bucket")
+    private val background = game.assets[TextureAtlasAssets.Game].findRegion("background")
     // load the drop sound effect and the rain background music
-    private val dropSound = Gdx.audio.newSound(Gdx.files.internal("sounds/drop.mp3"))
-    private val rainMusic = Gdx.audio.newMusic(Gdx.files.internal("music/music.mp3")).apply { isLooping = true }
+    private val dropSound = game.assets[SoundAssets.Drop]
+    private val rainMusic = game.assets[MusicAssets.Rain].apply { isLooping = true }
     // The camera ensures we can render using our target resolution of 800x480
     //    pixels no matter what the screen resolution is.
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
@@ -165,8 +165,8 @@ class GameScreen(val game: DemoGame) : KtxScreen {
 
     override fun dispose() {
         log.debug { "Disposing ${this.javaClass.simpleName}" }
-        dropImage.dispose()
-        bucketImage.dispose()
+        dropImage.texture.dispose()
+        bucketImage.texture.dispose()
         dropSound.dispose()
         rainMusic.dispose()
     }

@@ -76,12 +76,15 @@ operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
 
 // texture atlas
 enum class TextureAtlasAssets(val path: String) {
-    Game("images/game.atlas")
+    Game("atlases/game.atlas")
 }
 
 fun AssetManager.load(asset: TextureAtlasAssets) = load<TextureAtlas>(asset.path)
 operator fun AssetManager.get(asset: TextureAtlasAssets) = getAsset<TextureAtlas>(asset.path) 
 ```
+
+**Tip:** If in doubt, when working on larger projects use the Java way of having one class per file, where the file and the class have the same name. 
+This will make it easier to find the class you are looking for.
 
 Let's move on to our **MainMenuScreen** and rename it to **LoadingScreen**. This screen is now responsible to load our game assets. We override the `show` method to do that. It uses our `load` extension that we defined for each of our asset _types_.
 
@@ -93,7 +96,10 @@ override fun show() {
 }
 ```
 
-With these lines we told our assetmanager to queue our assets for loading! Now we need to tell the manager to really load it. For that we are using the `update` method which could later on 
+**Note:** if you get an error like `Argument type mismatch: actual type is 'MusicAssets', but '(com. badlogic. gdx. assets. AssetDescriptor<kotlin. Any!>..com. badlogic. gdx. assets. AssetDescriptor<*>?)' was expected`,
+make sure that our DemoGame and EAssets are part of the same package. You can fix this by adding `package com.demoktx.game` at the top of the EAssets file.
+
+With these lines we told our asset manager to queue our assets for loading! Now we need to tell the manager to really load it. For that we are using the `update` method which could later on 
 be used to show a progressbar for the loading. Alternatively you can call `finishLoading` which blocks the game until all queued assets are loaded. As you can imagine this is not perfect 
 once your assets get bigger and bigger as it might freeze your game for a couple of seconds. With our approach we need to call `update` periodically and that's why we put it into the `render` 
 method. Additionally, we do not change to our **GameScreen** as long as there are assets still loading. Here are the changes to the render method of the **LoadingScreen** class:
@@ -125,7 +131,10 @@ override fun render(delta: Float) {
 }
 ```
 
-Almost done! We have our assets loaded in our **LoadingScreen** and we are ready to use them in our **GameScreen**. We will use our **get** extension which is based on **LibKTX's getAsset** to easily access our assets. Also, we can remove the `dispose` method as our assetmanager will now take care of that and we added `assets.dispose()` already to our **Game** class. These are the changes for our GameScreen:
+Almost done! We have our assets loaded in our **LoadingScreen** and we are ready to use them in our **GameScreen**. 
+We will use our **get** extension which is based on **LibKTX's getAsset** to easily access our assets. 
+Also, we can remove the `dispose` method as our asset manager will now take care of that and we added `assets.dispose()` already to our **Game** class. 
+These are the changes for our GameScreen:
 
 ```Diff
 class GameScreen(val game: Game) : KtxScreen {
@@ -155,7 +164,9 @@ And with that we are done for asset management! I hope it wasn't too overwhelmin
 
 ***
 
-There is one final step missing for this section. You most likely noticed already the **TextureAtlasAssets enum**.I used the [TexturePacker GUI](https://github.com/crashinvaders/gdx-texture-packer-gui/blob/master/README.md) to create a **TextureAtlas**. You can download it [here](https://github.com/crashinvaders/gdx-texture-packer-gui/releases). You can also check out the **gameTexPacker.tpproj** file of the repository which contains the settings I used. It is very important to use **padding** otherwise you will get **artifacts** in your game. From my experience a padding of 4, enabling **Duplicate padding**, **Edge padding** and **Bleeding** removed any artifacts/texture bleedings that I ever had. <br>
+There is one final step missing for this section. You most likely noticed already the **TextureAtlasAssets enum**.I used the [TexturePacker GUI](https://github.com/crashinvaders/gdx-texture-packer-gui/blob/master/README.md) to create a **TextureAtlas**. You can download it [here](https://github.com/crashinvaders/gdx-texture-packer-gui/releases). You can also check out the **gameTexPacker.tpproj** file of the repository which contains the settings I used.
+Create an `assets/atlases` directory and use that to save the **game.atlas** file that you will create with the TexturePacker GUI. <br>
+It is very important to use **padding** otherwise you will get **artifacts** in your game. From my experience a padding of 4, enabling **Duplicate padding**, **Edge padding** and **Bleeding** removed any artifacts/texture bleedings that I ever had. <br>
 Also, note the **File name** which is the name of our atlas that contains all of our images. Here is a screenshot of the settings:
 ![TexturePacker Settings](https://www.dropbox.com/s/orom5qd4lzmlffx/2019-05-04%2017_22_07-GDX%20Texture%20Packer.png?raw=1)
 
