@@ -21,7 +21,7 @@ First thing to do? Yeah ... I know you guessed it already ... well, here is our 
 Next we will create our **AssetManager** which takes care of loading, unloading and accessing our assets. Let's update our **Game** class accordingly. Note that we are also going to rename our **MainMenuScreen** to **LoadingScreen** as it fits the purpose of that screen better with the upcoming changes to it.
 
 ```Diff
-class Game : KtxGame<KtxScreen>() {
+class DemoGame : KtxGame<KtxScreen>() {
     val batch by lazy { SpriteBatch() }
     // use LibGDX's default Arial font
     val font by lazy { BitmapFont() }
@@ -36,16 +36,19 @@ class Game : KtxGame<KtxScreen>() {
     }
 
     override fun dispose() {
-        batch.dispose()
-        font.dispose()
-+       assets.dispose()
+        batch.disposeSafely()
+        font.disposeSafely()
++       assets.disposeSafely()
         super.dispose()
     }
 }
 ```
 
-So, now that we have got our **AssetManager** we also want to do something with it so it does not get bored! Let's define our **assets** for the game. We will follow a similar approach as mentioned in the [LibKTX assets documentation](https://github.com/libktx/ktx/blob/master/assets/README.md) which means we are creating **enums** for our assets. We will do that for each _type_ of asset. <br>
-We will also add our own **extension methods** to conveniently load and access our assets. We use the **LibKTX load** and **getAsset** extensions for that. Here is the code of our **EAssets** file:
+So, now that we have got our **AssetManager** we also want to do something with it so it does not get bored! Let's define our **assets** for the game. We will follow a similar approach as mentioned in the [LibKTX assets documentation](https://github.com/libktx/ktx/blob/master/assets/README.md) which means we are creating **enums** for our assets. We will do that for each _type_ of asset.
+We will also add our own **extension methods** to conveniently load and access our assets. We use the **LibKTX load** and **getAsset** extensions for that. <br>
+So far we've been adding new classes to the same file for convinience. This works as long as the classes are small, but now it's getting crowded. Also, the code is better organized if classes are divided into multiple files in a logical way.
+Let's then create a new Kotlin file called **EAssets**. The exact path will be `core/src/main/kotlin/com/demoktx/game/EAssets.kt`
+Here is the code of our **EAssets** file:
 
 ```Kotlin
 import com.badlogic.gdx.assets.AssetManager
@@ -57,40 +60,43 @@ import ktx.assets.load
 
 // sounds
 enum class SoundAssets(val path: String) {
-    Drop("sounds/drop.wav")
+    Drop("sounds/drop.mp3")
 }
 
-inline fun AssetManager.load(asset: SoundAssets) = load<Sound>(asset.path)
-inline operator fun AssetManager.get(asset: SoundAssets) = getAsset<Sound>(asset.path)
+fun AssetManager.load(asset: SoundAssets) = load<Sound>(asset.path)
+operator fun AssetManager.get(asset: SoundAssets) = getAsset<Sound>(asset.path)
 
 // music
 enum class MusicAssets(val path: String) {
-    Rain("music/rain.mp3")
+    Rain("music/music.mp3")
 }
 
-inline fun AssetManager.load(asset: MusicAssets) = load<Music>(asset.path)
-inline operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
+fun AssetManager.load(asset: MusicAssets) = load<Music>(asset.path)
+operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
 
 // texture atlas
 enum class TextureAtlasAssets(val path: String) {
     Game("images/game.atlas")
 }
 
-inline fun AssetManager.load(asset: TextureAtlasAssets) = load<TextureAtlas>(asset.path)
-inline operator fun AssetManager.get(asset: TextureAtlasAssets) = getAsset<TextureAtlas>(asset.path) 
+fun AssetManager.load(asset: TextureAtlasAssets) = load<TextureAtlas>(asset.path)
+operator fun AssetManager.get(asset: TextureAtlasAssets) = getAsset<TextureAtlas>(asset.path) 
 ```
 
 Let's move on to our **MainMenuScreen** and rename it to **LoadingScreen**. This screen is now responsible to load our game assets. We override the `show` method to do that. It uses our `load` extension that we defined for each of our asset _types_.
 
 ```Kotlin
 override fun show() {
-    MusicAssets.values().forEach { game.assets.load(it) }
-    SoundAssets.values().forEach { game.assets.load(it) }
-    TextureAtlasAssets.values().forEach { game.assets.load(it) }
+    MusicAssets.entries.forEach { game.assets.load(it) }
+    SoundAssets.entries.forEach { game.assets.load(it) }
+    TextureAtlasAssets.entries.forEach { game.assets.load(it) }
 }
 ```
 
-With these lines we told our assetmanager to queue our assets for loading! Now we need to tell the manager to really load it. For that we are using the `update` method which could later on be used to show a progressbar for the loading. Alternatively you can call `finishLoading` which blocks the game until all queued assets are loaded. As you can imagine this is not perfect once your assets get bigger and bigger as it might freeze your game for a couple of seconds. With our approach we need to call `update` periodically and that's why we put it into the `render` method. Additionally, we do not change to our **GameScreen** as long as there are assets still loading. Here are the changes to the render method:
+With these lines we told our assetmanager to queue our assets for loading! Now we need to tell the manager to really load it. For that we are using the `update` method which could later on 
+be used to show a progressbar for the loading. Alternatively you can call `finishLoading` which blocks the game until all queued assets are loaded. As you can imagine this is not perfect 
+once your assets get bigger and bigger as it might freeze your game for a couple of seconds. With our approach we need to call `update` periodically and that's why we put it into the `render` 
+method. Additionally, we do not change to our **GameScreen** as long as there are assets still loading. Here are the changes to the render method of the **LoadingScreen** class:
 
 ```Diff
 override fun render(delta: Float) {

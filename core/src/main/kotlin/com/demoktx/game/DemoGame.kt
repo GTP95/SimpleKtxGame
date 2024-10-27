@@ -3,6 +3,7 @@ package com.demoktx.game
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -25,40 +26,50 @@ private val log = logger<GameScreen>()
 class DemoGame : KtxGame<KtxScreen>() {
     val batch by lazy { SpriteBatch() }
     val font by lazy { BitmapFont() }
+    val assets = AssetManager()
 
     override fun create() {
         KtxAsync.initiate()
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
-        addScreen(MainMenuScreen(this))
-        setScreen<MainMenuScreen>()
+        addScreen(LoadingScreen(this))
+        setScreen<LoadingScreen>()
         super.create()
     }
 
     override fun dispose() {
         batch.disposeSafely()
         font.disposeSafely()
+        assets.disposeSafely()
         super.dispose()
     }
 }
 
-class MainMenuScreen(val game: DemoGame) : KtxScreen {
+class LoadingScreen(val game: DemoGame) : KtxScreen {
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
 
     override fun render(delta: Float) {
+        game.assets.update()    // continue loading our assets
         camera.update()
         game.batch.projectionMatrix = camera.combined
 
         game.batch.use {
             game.font.draw(it, "Welcome to Drop!!! ", 100f, 150f)
-            game.font.draw(it, "Tap anywhere to begin!", 100f, 100f)
+            if(game.assets.isFinished) game.font.draw(it, "Tap anywhere to begin!", 100f, 100f)
+            else game.font.draw(it, "Loading assets...", 100f, 100f)
         }
 
-        if (Gdx.input.isTouched) {
+        if (Gdx.input.isTouched && game.assets.isFinished) {    //transition to game screen
             game.addScreen(GameScreen(game))
             game.setScreen<GameScreen>()
-            game.removeScreen<MainMenuScreen>()
+            game.removeScreen<LoadingScreen>()
             dispose()
         }
+    }
+
+    override fun show() {
+        MusicAssets.entries.forEach { game.assets.load(it) }
+        SoundAssets.entries.forEach { game.assets.load(it) }
+        TextureAtlasAssets.entries.forEach { game.assets.load(it) }
     }
 }
 
