@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -16,6 +15,7 @@ import com.badlogic.gdx.utils.TimeUtils
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.disposeSafely
+import ktx.assets.pool
 import ktx.async.KtxAsync
 import ktx.collections.iterate
 import ktx.log.logger
@@ -90,13 +90,14 @@ class GameScreen(val game: DemoGame) : KtxScreen {
     private val bucket = Rectangle(800f / 2f - 64f / 2f, 20f, 64f, 64f)
     // create the touchPos to store mouse click position
     private val touchPos = Vector3()
-    // create the raindrops array and spawn the first raindrop
-    private val raindrops = Array<Rectangle>() // gdx, not Kotlin Array
+    // create the raindrops pool
+    private val raindropsPool = pool { Rectangle() } // pool to reuse raindrop rectangles
+    private val activeRaindrops = Array<Rectangle>() // gdx, not Kotlin Array
     private var lastDropTime = 0L
     private var dropsGathered = 0
 
     private fun spawnRaindrop() {
-        raindrops.add(Rectangle(MathUtils.random(0f, 800f - 64f), 480f, 64f, 64f))
+        activeRaindrops.add(raindropsPool().set(MathUtils.random(0f, 800f - 64f), 480f, 64f, 64f))
         lastDropTime = TimeUtils.nanoTime()
     }
 
@@ -112,7 +113,7 @@ class GameScreen(val game: DemoGame) : KtxScreen {
             game.batch.draw(background, 0f, 0f)
             game.font.draw(batch, "Drops Collected: $dropsGathered", 0f, 480f)
             game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height)
-            for (raindrop in raindrops) {
+            for (raindrop in activeRaindrops) {
                 game.batch.draw(dropImage, raindrop.x, raindrop.y)
             }
         }
@@ -141,7 +142,7 @@ class GameScreen(val game: DemoGame) : KtxScreen {
         // move the raindrops, remove any that are beneath the bottom edge of the
         //    screen or that hit the bucket.  In the latter case, play back a sound
         //    effect also
-        raindrops.iterate { raindrop, iterator ->
+        activeRaindrops.iterate { raindrop, iterator ->
             raindrop.y -= 200 * delta
 
             if (raindrop.y + 64 < 0) {
