@@ -13,7 +13,8 @@ The only thing left is then to update our **GameScreen**. First we create a new 
 +  private val activeRaindrops = Array<Rectangle>() // gdx, not Kotlin Array
 ```
 
-In our `spawnRaindrop` method we will now use our pool to obtain either an existing rectangle or a new one. A call to `raindropsPool()` will do that for us.
+In our `spawnRaindrop` method we will now use our pool to obtain either an existing rectangle or a new one. 
+A call to `raindropsPool()` will do that for us. Remember to `import ktx.assets.invoke`.
 
 ```Diff
 private fun spawnRaindrop() {

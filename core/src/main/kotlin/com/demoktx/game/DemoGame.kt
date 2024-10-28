@@ -20,6 +20,7 @@ import ktx.async.KtxAsync
 import ktx.collections.iterate
 import ktx.log.logger
 import ktx.graphics.use
+import ktx.assets.invoke
 
 private val log = logger<GameScreen>()
 
@@ -146,14 +147,17 @@ class GameScreen(val game: DemoGame) : KtxScreen {
             raindrop.y -= 200 * delta
 
             if (raindrop.y + 64 < 0) {
-                log.debug { "Missed a raindrop!" }
                 iterator.remove()
+                raindropsPool(raindrop)
+                log.debug { "Missed a raindrop! Pool free objects: ${raindropsPool.free}" }
             }
 
             if (raindrop.overlaps(bucket)) {
                 dropsGathered++
                 dropSound.play()
                 iterator.remove()
+                raindropsPool(raindrop)
+                log.debug { "Gathered a raindrop! Pool free objects: ${raindropsPool.free}" }
             }
         }
     }
