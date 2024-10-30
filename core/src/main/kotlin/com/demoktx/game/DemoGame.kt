@@ -68,11 +68,11 @@ class LoadingScreen(private val game: DemoGame,
 
         game.batch.use {
             game.font.draw(it, "Welcome to Drop!!! ", 100f, 150f)
-            if(game.assets.isFinished) game.font.draw(it, "Tap anywhere to begin!", 100f, 100f)
+            if(assets.isFinished) game.font.draw(it, "Tap anywhere to begin!", 100f, 100f)
             else game.font.draw(it, "Loading assets...", 100f, 100f)
         }
 
-        if (Gdx.input.isTouched && game.assets.isFinished) {    //transition to game screen
+        if (Gdx.input.isTouched && assets.isFinished) {    //transition to game screen
             game.addScreen(GameScreen(batch, font, assets, camera))
             game.setScreen<GameScreen>()
             game.removeScreen<LoadingScreen>()
