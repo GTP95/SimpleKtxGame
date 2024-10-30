@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -14,13 +15,14 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
-import ktx.assets.disposeSafely
 import ktx.assets.pool
 import ktx.async.KtxAsync
 import ktx.collections.iterate
 import ktx.log.logger
 import ktx.graphics.use
 import ktx.assets.invoke
+import ktx.inject.Context
+import ktx.inject.register
 
 private val log = logger<GameScreen>()
 
@@ -28,25 +30,36 @@ class DemoGame : KtxGame<KtxScreen>() {
     val batch by lazy { SpriteBatch() }
     val font by lazy { BitmapFont() }
     val assets = AssetManager()
+    private val context = Context()
 
     override fun create() {
         KtxAsync.initiate()
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
-        addScreen(LoadingScreen(this))
+        Gdx.app.setLogLevel(Application.LOG_DEBUG)
+        context.register {
+            bindSingleton<Batch>(SpriteBatch())
+            bindSingleton(BitmapFont())
+            bindSingleton(AssetManager())
+            // The camera ensures we can render using our target resolution of 800x480
+            //    pixels no matter what the screen resolution is.
+            bindSingleton(OrthographicCamera().apply { setToOrtho(false, 800f, 480f) })
+
+            addScreen(LoadingScreen(this@DemoGame, inject(), inject(), inject(), inject()))
+        }
         setScreen<LoadingScreen>()
         super.create()
     }
 
     override fun dispose() {
-        batch.disposeSafely()
-        font.disposeSafely()
-        assets.disposeSafely()
+        context.dispose()
         super.dispose()
     }
 }
 
-class LoadingScreen(val game: DemoGame) : KtxScreen {
-    private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
+class LoadingScreen(private val game: DemoGame,
+                    private val batch: Batch,
+                    private val font: BitmapFont,
+                    private val assets: AssetManager,
+                    private val camera: OrthographicCamera) : KtxScreen {
 
     override fun render(delta: Float) {
         game.assets.update()    // continue loading our assets
@@ -60,7 +73,7 @@ class LoadingScreen(val game: DemoGame) : KtxScreen {
         }
 
         if (Gdx.input.isTouched && game.assets.isFinished) {    //transition to game screen
-            game.addScreen(GameScreen(game))
+            game.addScreen(GameScreen(batch, font, assets, camera))
             game.setScreen<GameScreen>()
             game.removeScreen<LoadingScreen>()
             dispose()
@@ -74,17 +87,20 @@ class LoadingScreen(val game: DemoGame) : KtxScreen {
     }
 }
 
-class GameScreen(val game: DemoGame) : KtxScreen {
+class GameScreen(private val batch: Batch,
+                 private val font: BitmapFont,
+                 assets: AssetManager,
+                 private val camera: OrthographicCamera) : KtxScreen {
     // load the images for the droplet & bucket, 64x64 pixels each
-    private val dropImage = game.assets[TextureAtlasAssets.Game].findRegion("drop")
-    private val bucketImage = game.assets[TextureAtlasAssets.Game].findRegion("bucket")
-    private val background = game.assets[TextureAtlasAssets.Game].findRegion("background")
+    private val dropImage = assets[TextureAtlasAssets.Game].findRegion("drop")
+    private val bucketImage = assets[TextureAtlasAssets.Game].findRegion("bucket")
+    private val background = assets[TextureAtlasAssets.Game].findRegion("background")
     // load the drop sound effect and the rain background music
-    private val dropSound = game.assets[SoundAssets.Drop]
-    private val rainMusic = game.assets[MusicAssets.Rain].apply { isLooping = true }
+    private val dropSound = assets[SoundAssets.Drop]
+    private val rainMusic = assets[MusicAssets.Rain].apply { isLooping = true }
     // The camera ensures we can render using our target resolution of 800x480
     //    pixels no matter what the screen resolution is.
-    private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 480f) }
+
     // create a Rectangle to logically represent the bucket
     // center the bucket horizontally
     // bottom left bucket corner is 20px above
@@ -107,15 +123,15 @@ class GameScreen(val game: DemoGame) : KtxScreen {
         camera.update()
 
         // tell the SpriteBatch to render in the coordinate system specified by the camera.
-        game.batch.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
 
         // begin a new batch and draw the bucket and all drops
-        game.batch.use { batch ->
-            game.batch.draw(background, 0f, 0f)
-            game.font.draw(batch, "Drops Collected: $dropsGathered", 0f, 480f)
-            game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height)
+        batch.use { batch ->
+            batch.draw(background, 0f, 0f)
+            font.draw(batch, "Drops Collected: $dropsGathered", 0f, 480f)
+            batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height)
             for (raindrop in activeRaindrops) {
-                game.batch.draw(dropImage, raindrop.x, raindrop.y)
+                batch.draw(dropImage, raindrop.x, raindrop.y)
             }
         }
 
